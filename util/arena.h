@@ -23,13 +23,16 @@ class Arena {
   ~Arena();
 
   // Return a pointer to a newly allocated memory block of "bytes" bytes.
+  // 基本的内存分配函数
   char* Allocate(size_t bytes);
 
   // Allocate memory with the normal alignment guarantees provided by malloc.
+  // 按照字节对齐来分配内存
   char* AllocateAligned(size_t bytes);
 
   // Returns an estimate of the total memory usage of data allocated
   // by the arena.
+  // 返回目前向系统申请分配的内存总量
   size_t MemoryUsage() const {
     return memory_usage_.load(std::memory_order_relaxed);
   }
@@ -39,16 +42,20 @@ class Arena {
   char* AllocateNewBlock(size_t block_bytes);
 
   // Allocation state
+  // 当前内存块未分配内存的起始地址
   char* alloc_ptr_;
+  // 当前内存块剩余的内存
   size_t alloc_bytes_remaining_;
 
   // Array of new[] allocated memory blocks
+  // Arena 使用 vector 来存储每个内存块的地址
   std::vector<char*> blocks_;
 
   // Total memory usage of the arena.
   //
   // TODO(costan): This member is accessed via atomics, but the others are
   //               accessed without any locking. Is this OK?
+  // 当前 Arena 已经分配的总内存量
   std::atomic<size_t> memory_usage_;
 };
 
